@@ -6,14 +6,18 @@ GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 
 printf "${GREEN}Prerequisites${NC}\n"
-sudo apt-get upgrade
+sudo apt upgrade
 curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
 sudo mv microsoft.gpg /etc/apt/trusted.gpg.d/microsoft.gpg
 sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-$(lsb_release -cs)-prod $(lsb_release -cs) main" > /etc/apt/sources.list.d/dotnetdev.list'
-sudo apt-get update
+declare repo_version=$(if command -v lsb_release &> /dev/null; then lsb_release -r -s; else grep -oP '(?<=^VERSION_ID=).+' /etc/os-release | tr -d '"'; fi)
+wget https://packages.microsoft.com/config/ubuntu/$repo_version/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+sudo dpkg -i packages-microsoft-prod.deb
+rm packages-microsoft-prod.deb
+sudo apt update
 
 echo "${GREEN}.Net 6${NC}\n"
-sudo apt-get install -y dotnet-sdk-6.0
+sudo apt install -y dotnet-sdk-6.0
 
 echo "${GREEN}Functions${NC}\n"
 sudo apt install azure-functions-core-tools-4
