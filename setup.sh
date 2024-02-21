@@ -26,6 +26,16 @@ code --install-extension ms-vscode-remote.remote-containers
 code --install-extension davidanson.vscode-markdownlint
 code --install-extension gruntfuggly.todo-tree
 
+echo Global Git settings
+git config --global init.defaultBranch main
+git config --global user.email michael.meadows@insight.com
+git config --global user.name "Michael Meadows"
+
+echo SSH
+mkdir ~/.ssh
+cp /mnt/c/Users/micha/.ssh/* ~/.ssh
+cd ~ && chmod 600 ~/.ssh/* && chmod 700 ~/.ssh && chmod 644 ~/.ssh/*.pub
+
 echo The Code
 mkdir ~/temp
 cd ~/temp
@@ -33,6 +43,7 @@ git init
 git remote add origin https://github.com/microsoft/WhatTheHack.git
 git pull origin master --depth 1
 cp ~/temp/015-Serverless/Student/Resources ~/src/wth -r
+rm ~/temp -rfd
 
 echo Oh my ZSH
 sudo apt install fonts-powerline
