@@ -6,22 +6,26 @@ GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 
 printf "${GREEN}Prerequisites${NC}\n"
-sudo apt upgrade
+# Needed for Functions Core Tools
 curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
 sudo mv microsoft.gpg /etc/apt/trusted.gpg.d/microsoft.gpg
 sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-$(lsb_release -cs)-prod $(lsb_release -cs) main" > /etc/apt/sources.list.d/dotnetdev.list'
 
+# Needed for .Net SDK
 declare repo_version=$(if command -v lsb_release &> /dev/null; then lsb_release -r -s; else grep -oP '(?<=^VERSION_ID=).+' /etc/os-release | tr -d '"'; fi)
 wget https://packages.microsoft.com/config/ubuntu/$repo_version/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
 sudo dpkg -i packages-microsoft-prod.deb
 rm packages-microsoft-prod.deb
 sudo touch /etc/apt/preferences
-cat > /etc/apt/preferences << EOL
+sudo bash -c 'cat > /etc/apt/preferences << EOL
 Package: *
 Pin: origin "packages.microsoft.com"
 Pin-Priority: 1001
-EOL
+EOL'
+
+#Get everything current
 sudo apt update
+sudo apt upgrade -y
 
 printf "${GREEN}.Net 6${NC}\n"
 sudo apt install -y dotnet-sdk-6.0
