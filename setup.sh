@@ -16,18 +16,18 @@ sudo dpkg -i packages-microsoft-prod.deb
 rm packages-microsoft-prod.deb
 sudo apt update
 
-echo "${GREEN}.Net 6${NC}\n"
+printf "${GREEN}.Net 6${NC}\n"
 sudo apt install -y dotnet-sdk-6.0
 
-echo "${GREEN}Functions${NC}\n"
+printf "${GREEN}Functions${NC}\n"
 sudo apt install azure-functions-core-tools-4
 
-echo "${GREEN}Node.js${NC}\n"
+printf "${GREEN}Node.js${NC}\n"
 wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
 source ~/.bashrc
 nvm install --lts
 
-echo "${GREEN}VSCode${NC}\n"
+printf "${GREEN}VSCode${NC}\n"
 code --install-extension ms-dotnettools.vscode-dotnet-runtime
 code --install-extension ms-dotnettools.csdevkit
 code --install-extension ms-vscode.vscode-node-azure-pack
@@ -35,21 +35,21 @@ code --install-extension ms-vscode-remote.remote-containers
 code --install-extension davidanson.vscode-markdownlint
 code --install-extension gruntfuggly.todo-tree
 
-echo "${GREEN}Global Git settings${NC}\n"
+printf "${GREEN}Global Git settings${NC}\n"
 git config --global init.defaultBranch main
 git config --global user.email michael.meadows@insight.com
 git config --global user.name "Michael Meadows"
 
-echo "${GREEN}SSH${NC}\n"
+printf "${GREEN}SSH${NC}\n"
 mkdir ~/.ssh
 cp /mnt/c/Users/micha/.ssh/* ~/.ssh
 cd ~ && chmod 600 ~/.ssh/* && chmod 700 ~/.ssh && chmod 644 ~/.ssh/*.pub
 
-echo "${GREEN}Some more Git${NC}\n"
+printf "${GREEN}Some more Git${NC}\n"
 git remote remove origin
 git remote add origin git@github.com:WalkingDisaster/wth.git
 
-echo "${GREEN}The Code${NC}\n"
+printf "${GREEN}The Code${NC}\n"
 mkdir ~/temp
 cd ~/temp
 git init
@@ -59,7 +59,7 @@ cp ~/temp/015-Serverless/Student/Resources/* ~/src/wth -r
 cd ~/src/wth
 rm ~/temp -rfd
 
-echo "${GREEN}Oh my ZSH${NC}\n"
+printf "${GREEN}Oh my ZSH${NC}\n"
 sudo apt install fonts-powerline -y
 sudo apt install -qq zsh -y
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
