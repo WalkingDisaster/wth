@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# mkdir src; cd src; git clone https://github.com/WalkingDisaster/wth.git;cd wth;. setup.sh;
+# mkdir ~/.ssh;cp /mnt/c/Users/micha/.ssh/* ~/.ssh;cd ~ && chmod 600 ~/.ssh/* && chmod 700 ~/.ssh && chmod 644 ~/.ssh/*.pub;mkdir src; cd src; git clone git@github.com:WalkingDisaster/wth.git;cd wth;. setup.sh;
 
 GREEN='\033[0;32m'
 GRAY='\033[0;90m'
@@ -52,14 +52,14 @@ git config --global init.defaultBranch main
 git config --global user.email michael.meadows@insight.com
 git config --global user.name "Michael Meadows"
 
-printf "${GREEN}SSH${NC}\n"
-mkdir ~/.ssh
-cp /mnt/c/Users/micha/.ssh/* ~/.ssh
-cd ~ && chmod 600 ~/.ssh/* && chmod 700 ~/.ssh && chmod 644 ~/.ssh/*.pub
+# printf "${GREEN}SSH${NC}\n"
+# mkdir ~/.ssh
+# cp /mnt/c/Users/micha/.ssh/* ~/.ssh
+# cd ~ && chmod 600 ~/.ssh/* && chmod 700 ~/.ssh && chmod 644 ~/.ssh/*.pub
 
-printf "${GREEN}Some more Git${NC}\n"
-git remote remove origin
-git remote add origin git@github.com:WalkingDisaster/wth.git
+# printf "${GREEN}Some more Git${NC}\n"
+# git remote remove origin
+# git remote add origin git@github.com:WalkingDisaster/wth.git
 
 printf "${GREEN}The Code${NC}\n"
 mkdir ~/temp
