@@ -6,17 +6,17 @@ GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 
 printf "${GREEN}Prerequisites${NC}\n"
-sudo apt-get upgrade
+sudo apt upgrade
 curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
 sudo mv microsoft.gpg /etc/apt/trusted.gpg.d/microsoft.gpg
 sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-$(lsb_release -cs)-prod $(lsb_release -cs) main" > /etc/apt/sources.list.d/dotnetdev.list'
-sudo apt-get update
+sudo apt update
 
 echo "${GREEN}.Net 6${NC}\n"
-sudo apt-get install -y dotnet-sdk-6.0
+sudo apt install -y dotnet-sdk-6.0
 
 echo "${GREEN}Functions${NC}\n"
-sudo apt-get install azure-functions-core-tools-4
+sudo apt install azure-functions-core-tools-4
 
 echo "${GREEN}Node.js${NC}\n"
 wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
@@ -55,8 +55,8 @@ cp ~/temp/015-Serverless/Student/Resources/* ~/src/wth -r
 rm ~/temp -rfd
 
 echo "${GREEN}Oh my ZSH${NC}\n"
-sudo apt install fonts-powerline
-sudo apt install zsh -y
+sudo apt install fonts-powerline -y
+sudo apt install -qq zsh -y
 sed -i 's/robbyrussell/agnoster/g' ~/.zshrc | bash
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 zsh
