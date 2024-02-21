@@ -58,7 +58,7 @@ echo "${GREEN}Oh my ZSH${NC}\n"
 sudo apt install fonts-powerline -y
 sudo apt install -qq zsh -y
 # sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh | sed 's:env zsh -l::g' | sed 's:chsh -s .*$::g')"
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 sed -i 's/robbyrussell/agnoster/g' ~/.zshrc | bash
 env zsh
 
