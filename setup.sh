@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# mkdir src; cd src; git clone https://github.com/WalkingDisaster/wth.git;cd wth;
+# mkdir src; cd src; git clone https://github.com/WalkingDisaster/wth.git;cd wth;. setup.sh;
 
 GREEN='\033[0;32m'
 NC='\033[0m' # No Color
