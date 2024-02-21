@@ -51,13 +51,13 @@ cd ~/temp
 git init
 git remote add origin https://github.com/microsoft/WhatTheHack.git
 git pull origin master --depth 1
-cp ~/temp/015-Serverless/Student/Resources ~/src/wth -r
+cp ~/temp/015-Serverless/Student/Resources/* ~/src/wth -r
 rm ~/temp -rfd
 
 echo "${GREEN}Oh my ZSH${NC}\n"
 sudo apt install fonts-powerline
 sudo apt install zsh -y
+sed -i 's/robbyrussell/agnoster/g' ~/.zshrc | bash
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-sed -i 's/robbyrussell/agnoster/g' ~/.zshrc
 zsh
 
