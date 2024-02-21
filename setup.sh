@@ -58,4 +58,6 @@ echo "${GREEN}Oh my ZSH${NC}\n"
 sudo apt install fonts-powerline
 sudo apt install zsh -y
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-omz theme set agnoster | bash
+sed -i 's/robbyrussell/agnoster/g' ~/.zshrc
+zsh
+
