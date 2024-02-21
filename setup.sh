@@ -3,15 +3,16 @@
 # mkdir src; cd src; git clone https://github.com/WalkingDisaster/wth.git;cd wth;. setup.sh;
 
 GREEN='\033[0;32m'
+GRAY='\033[0;90m'
 NC='\033[0m' # No Color
 
 printf "${GREEN}Prerequisites${NC}\n"
-# Needed for Functions Core Tools
+PRINTF "${GRAY}Adding Repository for Functions Core Tools${NC}"
 curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
 sudo mv microsoft.gpg /etc/apt/trusted.gpg.d/microsoft.gpg
 sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-$(lsb_release -cs)-prod $(lsb_release -cs) main" > /etc/apt/sources.list.d/dotnetdev.list'
 
-# Needed for .Net SDK
+PRINTF "${GRAY}Adding Repository for .Net SDK${NC}"
 declare repo_version=$(if command -v lsb_release &> /dev/null; then lsb_release -r -s; else grep -oP '(?<=^VERSION_ID=).+' /etc/os-release | tr -d '"'; fi)
 wget https://packages.microsoft.com/config/ubuntu/$repo_version/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
 sudo dpkg -i packages-microsoft-prod.deb
@@ -23,7 +24,7 @@ Pin: origin "packages.microsoft.com"
 Pin-Priority: 1001
 EOL'
 
-#Get everything current
+PRINTF "${GRAY}Getting Everything Current${NC}"
 sudo apt update
 sudo apt upgrade -y
 
