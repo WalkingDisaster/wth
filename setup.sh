@@ -75,5 +75,6 @@ sudo apt install fonts-powerline -y
 sudo apt install -qq zsh -y
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 sed -i 's/robbyrussell/agnoster/g' ~/.zshrc | bash
+chsh -s $(which zsh)
 env zsh -l
 
