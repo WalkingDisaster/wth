@@ -4,12 +4,17 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "=3.92.0"
     }
+    azapi = {
+      source = "azure/azapi"
+    }
   }
 }
 
 provider "azurerm" {
-  skip_provider_registration = true
   features {}
+}
+
+provider "azapi" {
 }
 
 data "azurerm_client_config" "current" {}
@@ -21,56 +26,7 @@ resource "random_integer" "ri" {
 
 resource "azurerm_resource_group" "rg" {
   name     = "wth"
-  location = "eastus"
-}
-
-resource "azurerm_cosmosdb_account" "cdb" {
-  name = "wthmnm${random_integer.ri.result}"
-
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-
-  offer_type = "Standard"
-
-  consistency_policy {
-    consistency_level = "Session"
-  }
-
-  geo_location {
-    location          = "eastus"
-    failover_priority = 0
-  }
-
-  capabilities {
-    name = "EnableServerless"
-  }
-}
-
-resource "azurerm_cosmosdb_sql_database" "db" {
-  name = "LicensePlates"
-
-  account_name        = azurerm_cosmosdb_account.cdb.name
-  resource_group_name = azurerm_resource_group.rg.name
-}
-
-resource "azurerm_cosmosdb_sql_container" "processed_container" {
-  name = "Processed"
-
-  account_name        = azurerm_cosmosdb_account.cdb.name
-  database_name       = azurerm_cosmosdb_sql_database.db.name
-  resource_group_name = azurerm_resource_group.rg.name
-
-  partition_key_path = "/licensePlateText"
-}
-
-resource "azurerm_cosmosdb_sql_container" "needs_review_container" {
-  name = "NeedsManualReview"
-
-  account_name        = azurerm_cosmosdb_account.cdb.name
-  database_name       = azurerm_cosmosdb_sql_database.db.name
-  resource_group_name = azurerm_resource_group.rg.name
-
-  partition_key_path = "/fileName"
+  location = "westus3"
 }
 
 resource "azurerm_storage_account" "sa" {
@@ -81,73 +37,32 @@ resource "azurerm_storage_account" "sa" {
 
   account_tier             = "Standard"
   account_replication_type = "LRS"
+  account_kind             = "Storage"
+
+  network_rules {
+    bypass         = ["AzureServices", "Logging", "Metrics"]
+    default_action = "Allow"
+  }
 }
 
-resource "azurerm_storage_container" "images_container" {
-  name                 = "images"
-  storage_account_name = azurerm_storage_account.sa.name
-}
-
-resource "azurerm_storage_container" "export_container" {
-  name                 = "export"
-  storage_account_name = azurerm_storage_account.sa.name
-}
-
-resource "azurerm_user_assigned_identity" "id" {
-  name = "wthmnm${random_integer.ri.result}"
-
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = azurerm_resource_group.rg.location
-}
-
-resource "azurerm_service_plan" "asp" {
-  name                = "wthmnm"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-
-  os_type  = "Linux"
-  sku_name = "Y1"
-}
-
-resource "azurerm_linux_function_app" "app" {
-  name                = "wthmnmapp${random_integer.ri.result}"
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = azurerm_resource_group.rg.location
-
-  storage_account_name       = azurerm_storage_account.sa.name
-  storage_account_access_key = azurerm_storage_account.sa.primary_access_key
-  service_plan_id            = azurerm_service_plan.asp.id
-
-  site_config {
-    application_stack {
-      dotnet_version              = "6.0"
-      use_dotnet_isolated_runtime = false
+resource "azapi_resource" "images_container" {
+  type      = "Microsoft.Storage/storageAccounts/blobServices/containers@2022-09-01"
+  name      = "images"
+  parent_id = "${azurerm_storage_account.sa.id}/blobServices/default"
+  body = jsonencode({
+    properties = {
     }
-  }
-
-  identity {
-    type = "SystemAssigned"
-  }
+  })
 }
 
-resource "azurerm_linux_function_app" "events" {
-  name                = "wthmnmevents${random_integer.ri.result}"
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = azurerm_resource_group.rg.location
-
-  storage_account_name       = azurerm_storage_account.sa.name
-  storage_account_access_key = azurerm_storage_account.sa.primary_access_key
-  service_plan_id            = azurerm_service_plan.asp.id
-
-  site_config {
-    application_stack {
-      node_version = "18"
+resource "azapi_resource" "export_container" {
+  type      = "Microsoft.Storage/storageAccounts/blobServices/containers@2022-09-01"
+  name      = "export"
+  parent_id = "${azurerm_storage_account.sa.id}/blobServices/default"
+  body = jsonencode({
+    properties = {
     }
-  }
-
-  identity {
-    type = "SystemAssigned"
-  }
+  })
 }
 
 resource "azurerm_eventgrid_topic" "eg" {
@@ -172,19 +87,26 @@ resource "azurerm_key_vault" "kv" {
   tenant_id           = data.azurerm_client_config.current.tenant_id
   sku_name            = "standard"
 
-  soft_delete_retention_days = 0
-  purge_protection_enabled   = false
-  enable_rbac_authorization  = true
+  purge_protection_enabled  = false
+  enable_rbac_authorization = true
+
+  depends_on = [azurerm_role_assignment.metokv]
 }
 
-resource "azurerm_role_assignment" "apptokv" {
-  scope              = azurerm_key_vault.kv.id
-  role_definition_id = "4633458b-17de-408a-b874-0445c86b69e6" # Key Vault Secrets User
-  principal_id       = azurerm_linux_function_app.app.identity.object_id
+resource "azurerm_key_vault_secret" "computer_vision" {
+  name         = "computerVisionApiKey"
+  key_vault_id = azurerm_key_vault.kv.id
+  value        = azurerm_cognitive_account.cv.primary_access_key
 }
 
-resource "azurerm_role_assignment" "apptokv" {
-  scope              = azurerm_key_vault.kv.id
-  role_definition_id = "4633458b-17de-408a-b874-0445c86b69e6" # Key Vault Secrets User
-  principal_id       = azurerm_linux_function_app.events.identity.object_id
+resource "azurerm_key_vault_secret" "event_grid" {
+  name         = "eventGridTopicKey"
+  key_vault_id = azurerm_key_vault.kv.id
+  value        = azurerm_eventgrid_topic.eg.primary_access_key
+}
+
+resource "azurerm_key_vault_secret" "storage" {
+  name         = "blobStorageConnection"
+  key_vault_id = azurerm_key_vault.kv.id
+  value        = azurerm_storage_account.sa.primary_connection_string
 }

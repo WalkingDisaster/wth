@@ -57,7 +57,9 @@ code --install-extension ms-vscode.vscode-node-azure-pack
 code --install-extension ms-vscode-remote.remote-containers
 code --install-extension davidanson.vscode-markdownlint
 code --install-extension gruntfuggly.todo-tree
+code --install-extension ms-azuretools.vscode-azureterraform
 code --install-extension HashiCorp.terraform
+
 
 printf "${GREEN}Global Git settings${NC}\n"
 git config --global init.defaultBranch main
